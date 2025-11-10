@@ -34,6 +34,20 @@ public class UnitTest1
 
         actionProducto.Should().Throw<ArgumentException>();
     }
+    
+    [Fact]
+    public void Si_SeAgreganDosProductosAlCarrito_Debe_SumarAmbosProductos()
+    {
+        var producto1 = new Producto(5);
+        var producto2 = new Producto(3);
+        var carritoCompras = new CarritoDeCompras();
+        carritoCompras.AgregarProducto(producto1);
+        carritoCompras.AgregarProducto(producto2);
+
+        var precioTotalEnCarritoDeCompras = carritoCompras.PrecioTotal();
+
+        precioTotalEnCarritoDeCompras.Should().Be(8);
+    }
 }
 
 public class Producto
