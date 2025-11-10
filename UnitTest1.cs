@@ -1,5 +1,6 @@
 ﻿using AwesomeAssertions;
 using System.Linq;
+using Xunit.Sdk;
 
 namespace SuperMarketTDD;
 
@@ -17,7 +18,7 @@ public class UnitTest1
     [Fact]
     public void Si_SoloElProducctoArrozSeAgregAlCarrito_Debe_ElCarritoDeComprasTenerElPrecioTotalDe1()
     {
-        var producto = new Producto("Arroz",1);
+        var producto = new Producto(1);
         var carritoCompras = new CarritoDeCompras();
         carritoCompras.AgregarProducto(producto);
 
@@ -25,17 +26,26 @@ public class UnitTest1
 
         precioTotalEnCarritoDeCompras.Should().Be(1);
     }
+
+    [Fact]
+    public void Si_UnProductoTieneUnValorNegativo_Debe_MostrarExepcion()
+    {
+        Action actionProducto = () => new Producto(-1);
+
+        actionProducto.Should().Throw<ArgumentException>();
+    }
 }
 
 public class Producto
 {
-    
-    private string _producto { get; set; }
     private int _valorUnidad { get; set; }
 
-    public Producto(string producto, int valorUnidad)
+    public Producto(int valorUnidad)
     {
-        _producto = producto;
+        if (valorUnidad < 0)
+        {
+            throw new ArgumentException("El valor del producto no puede ser negativo");
+        }
         _valorUnidad = valorUnidad;
     }
 
