@@ -18,7 +18,7 @@ public class UnitTest1
     [Fact]
     public void Si_SoloElProducctoArrozSeAgregAlCarrito_Debe_ElCarritoDeComprasTenerElPrecioTotalDe1()
     {
-        var producto = new Producto(1);
+        var producto = new Producto("Arroz", 1);
         var carritoCompras = new CarritoDeCompras();
         carritoCompras.AgregarProducto(producto);
 
@@ -30,7 +30,7 @@ public class UnitTest1
     [Fact]
     public void Si_UnProductoTieneUnValorNegativo_Debe_MostrarExepcion()
     {
-        Action actionProducto = () => new Producto(-1);
+        Action actionProducto = () => new Producto("Manzanas", -1);
 
         actionProducto.Should().Throw<ArgumentException>();
     }
@@ -38,8 +38,8 @@ public class UnitTest1
     [Fact]
     public void Si_SeAgreganDosProductosAlCarrito_Debe_SumarAmbosProductos()
     {
-        var producto1 = new Producto(5);
-        var producto2 = new Producto(3);
+        var producto1 = new Producto("Arroz", 5);
+        var producto2 = new Producto("Manzanas", 3);
         var carritoCompras = new CarritoDeCompras();
         carritoCompras.AgregarProducto(producto1);
         carritoCompras.AgregarProducto(producto2);
@@ -48,24 +48,45 @@ public class UnitTest1
 
         precioTotalEnCarritoDeCompras.Should().Be(8);
     }
+    
+    [Fact]
+    public void Si_SeAgregaUnProductosAlCarrito_Debe_ElCarritoMostrarLosNombresYValoresDeLosProductosQueContiene()
+    {
+        var producto1 = new Producto("Arroz", 5);
+        var producto2 = new Producto("Manzanas", 3);
+        var carritoCompras = new CarritoDeCompras();
+        carritoCompras.AgregarProducto(producto1);
+        carritoCompras.AgregarProducto(producto2);
+
+        var detalleProductos = carritoCompras.ObtenerDetalleProductos();
+
+        detalleProductos.Should().ContainInOrder("Arroz - 5", "Manzanas - 3");
+    }
 }
 
 public class Producto
 {
+    private string _nombre { get; set; }
     private int _valorUnidad { get; set; }
 
-    public Producto(int valorUnidad)
+    public Producto(string nombre, int valorUnidad)
     {
         if (valorUnidad < 0)
         {
             throw new ArgumentException("El valor del producto no puede ser negativo");
         }
+        _nombre = nombre;
         _valorUnidad = valorUnidad;
     }
 
     public int ObtenerValorUnidad()
     {
         return _valorUnidad;
+    }
+
+    public string ObtenerNombre()
+    {
+        return _nombre;
     }
 
 }
@@ -81,5 +102,10 @@ public class CarritoDeCompras
     public void AgregarProducto(Producto producto)
     {
         _productos.Add(producto);
+    }
+
+    public List<string> ObtenerDetalleProductos()
+    {
+        return _productos.Select(p => $"{p.ObtenerNombre()} - {p.ObtenerValorUnidad()}").ToList();
     }
 }
