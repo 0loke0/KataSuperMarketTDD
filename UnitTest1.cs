@@ -75,6 +75,16 @@ public class UnitTest1
         precioTotalEnCarritoDeCompras.Should().Be(6);
     }
     
+    [Fact]
+    public void Si_UnProductoTieneUnaCantidadNegativa_Debe_MostrarExepcion()
+    {
+        Action actionProducto = () => new Producto("Leche", 2, -1);
+
+        actionProducto.Should().Throw<ArgumentException>();
+    }
+    
+    
+    
 }
 
 public class Producto
@@ -88,6 +98,10 @@ public class Producto
         if (valorUnidad < 0)
         {
             throw new ArgumentException("El valor del producto no puede ser negativo");
+        }
+        if (cantidad < 0)
+        {
+            throw new ArgumentException("La cantidad del producto no puede ser negativa");
         }
         _nombre = nombre;
         _valorUnidad = valorUnidad;
