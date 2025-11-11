@@ -107,6 +107,21 @@ public class UnitTest1
         precioTotalEnCarritoDeCompras.Should().Be(90);
     }
     
+    [Fact]
+    public void Si_CarritoTieneProductos_Debe_GenerarReciboConDetalle()
+    {
+        var producto1 = new Producto("Arroz", 5, 2);
+        var producto2 = new Producto("Manzanas", 10, 1);
+        var carritoCompras = new CarritoDeCompras();
+        carritoCompras.AgregarProducto(producto1);
+        carritoCompras.AgregarProducto(producto2);
+
+        var recibo = carritoCompras.GenerarRecibo();
+
+        recibo.Should().Contain("-Arroz x2 - 10");
+        recibo.Should().Contain("-Manzanas x1 - 10");
+        recibo.Should().Contain("Total: 20");
+    }
 }
 
 public class Producto
@@ -142,6 +157,11 @@ public class Producto
     public string ObtenerNombre()
     {
         return _nombre;
+    }
+
+    public int ObtenerCantidad()
+    {
+        return _cantidad;
     }
 
     public int ObtenerValorTotal()
@@ -181,5 +201,14 @@ public class CarritoDeCompras
     public List<string> ObtenerDetalleProductos()
     {
         return _productos.Select(p => $"{p.ObtenerNombre()} - {p.ObtenerValorUnidad()}").ToList();
+    }
+
+    public string GenerarRecibo()
+    {
+        var lineas = _productos.Select(p => $"{p.ObtenerNombre()} x{p.ObtenerCantidad()} - {p.ObtenerValorTotal()}");
+        var detalleProductos = string.Join("\n", lineas);
+        
+        var total = PrecioTotal();
+        return $"{detalleProductos} Total: {total}";
     }
 }
