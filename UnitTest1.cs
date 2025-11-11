@@ -83,7 +83,17 @@ public class UnitTest1
         actionProducto.Should().Throw<ArgumentException>();
     }
     
-    
+    [Fact]
+    public void Si_HayOfertaDe3x2_Debe_AplicarDescuento()
+    {
+        var producto = new Producto("Cepillo", 10, 3, true);
+        var carritoCompras = new CarritoDeCompras();
+        carritoCompras.AgregarProducto(producto);
+
+        var precioTotalEnCarritoDeCompras = carritoCompras.PrecioTotal();
+
+        precioTotalEnCarritoDeCompras.Should().Be(20);
+    }
     
 }
 
@@ -92,8 +102,9 @@ public class Producto
     private string _nombre { get; set; }
     private int _valorUnidad { get; set; }
     private int _cantidad { get; set; }
+    private bool _tieneOferta3x2 { get; set; }
 
-    public Producto(string nombre, int valorUnidad, int cantidad)
+    public Producto(string nombre, int valorUnidad, int cantidad, bool tieneOferta3x2 = false)
     {
         if (valorUnidad < 0)
         {
@@ -106,6 +117,7 @@ public class Producto
         _nombre = nombre;
         _valorUnidad = valorUnidad;
         _cantidad = cantidad;
+        _tieneOferta3x2 = tieneOferta3x2;
     }
 
     public int ObtenerValorUnidad()
@@ -117,8 +129,14 @@ public class Producto
     {
         return _nombre;
     }
+
     public int ObtenerValorTotal()
     {
+        if (_tieneOferta3x2)
+        {
+            var productosGratis = _cantidad / 3;
+            return (_cantidad - productosGratis) * _valorUnidad;
+        }
         return _valorUnidad * _cantidad;
     }
 
