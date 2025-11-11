@@ -95,6 +95,18 @@ public class UnitTest1
         precioTotalEnCarritoDeCompras.Should().Be(20);
     }
     
+    [Fact]
+    public void Si_HayDescuentoPorcentual_Debe_AplicarDescuento()
+    {
+        var producto = new Producto("Manzanas", 100, 1, false, 10);
+        var carritoCompras = new CarritoDeCompras();
+        carritoCompras.AgregarProducto(producto);
+
+        var precioTotalEnCarritoDeCompras = carritoCompras.PrecioTotal();
+
+        precioTotalEnCarritoDeCompras.Should().Be(90);
+    }
+    
 }
 
 public class Producto
@@ -103,8 +115,9 @@ public class Producto
     private int _valorUnidad { get; set; }
     private int _cantidad { get; set; }
     private bool _tieneOferta3x2 { get; set; }
+    private int _descuentoPorcentual { get; set; }
 
-    public Producto(string nombre, int valorUnidad, int cantidad, bool tieneOferta3x2 = false)
+    public Producto(string nombre, int valorUnidad, int cantidad, bool tieneOferta3x2 = false, int descuentoPorcentual = 0)
     {
         if (valorUnidad < 0)
         {
@@ -118,6 +131,7 @@ public class Producto
         _valorUnidad = valorUnidad;
         _cantidad = cantidad;
         _tieneOferta3x2 = tieneOferta3x2;
+        _descuentoPorcentual = descuentoPorcentual;
     }
 
     public int ObtenerValorUnidad()
@@ -132,12 +146,21 @@ public class Producto
 
     public int ObtenerValorTotal()
     {
+        var valorTotal = _valorUnidad * _cantidad;
+
         if (_tieneOferta3x2)
         {
             var productosGratis = _cantidad / 3;
-            return (_cantidad - productosGratis) * _valorUnidad;
+            valorTotal = (_cantidad - productosGratis) * _valorUnidad;
         }
-        return _valorUnidad * _cantidad;
+
+        if (_descuentoPorcentual > 0)
+        {
+            var descuento = valorTotal * _descuentoPorcentual / 100;
+            valorTotal -= descuento;
+        }
+
+        return valorTotal;
     }
 
 }
